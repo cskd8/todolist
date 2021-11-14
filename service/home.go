@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -51,7 +50,6 @@ func Home(ctx *gin.Context) {
 	if err != nil {
 		page = 1
 	}
-	fmt.Println(page)
 
 	// Get DB connection
 	db, err := database.GetConnection()

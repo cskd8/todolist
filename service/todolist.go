@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -214,8 +213,6 @@ func Search(ctx *gin.Context) {
 
 	// Get End date
 	end := ctx.PostForm("end")
-
-	fmt.Println(query, filter, category_name, start, end)
 
 	if query == "" && filter == "" || filter == "all" && category_name == "" && start == "" && end == "" {
 		ctx.Redirect(http.StatusFound, "/")
