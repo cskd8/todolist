@@ -92,6 +92,17 @@
         </tr>
         {{ end }}
     </table>
+    <div class="w3-center">
+        {{ if eq .Url "/"}}
+            <div class="w3-bar">
+                {{ if eq .Prev 0 }}{{ else }}<a href="/?page={{ .Prev }}" class="w3-bar-item w3-button w3-hover-black">&laquo;</a>{{ end }}
+                {{ range $page := .Pages }}
+                <a class="w3-bar-item w3-button {{ if eq $page.Number $.Page }}w3-green{{ end }}" href="/?page={{ $page.Number }}">{{ $page.Number }}</a>
+                {{ end }}
+                {{ if eq .Page .PageCount }}{{ else }}<a href="/?page={{ .Next }}" class="w3-bar-item w3-button w3-hover-black">&raquo;</a>{{ end }}
+            </div>
+        {{ end }}
+    </div>
     {{ end }}
 </div>
 
@@ -108,7 +119,7 @@
                 <option value="{{ $category.ID }}">{{ $category.Name }}</option>
                 {{ end }}
             </select>
-            <input type="submit" value="Submit" class="w3-btn w3-round">
+            <input type="submit" value="Submit" class="w3-btn w3-round w3-blue">
         </div>
     </form>
 </div>
@@ -118,7 +129,7 @@
     <form method="post" action="/category">
         <label for="name">Name:</label>
         <input type="text" name="name" id="name">
-        <input type="submit" value="Submit" class="w3-btn w3-round">
+        <input type="submit" value="Submit" class="w3-btn w3-round w3-blue">
     </form>
 </div>
 {{ template "footer" }}

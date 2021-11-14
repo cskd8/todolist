@@ -208,13 +208,19 @@ func Search(ctx *gin.Context) {
 
 	// Get category
 	category_name := ctx.PostForm("category")
-	fmt.Println(category_name)
 
 	// Get Start date
 	start := ctx.PostForm("start")
 
 	// Get End date
 	end := ctx.PostForm("end")
+
+	fmt.Println(query, filter, category_name, start, end)
+
+	if query == "" && filter == "" || filter == "all" && category_name == "" && start == "" && end == "" {
+		ctx.Redirect(http.StatusFound, "/")
+		return
+	}
 
 	// Get tasks with its category using join in DB
 	var tasks []TaskCategory
@@ -233,13 +239,13 @@ func Search(ctx *gin.Context) {
 		}
 	} else if filter == "todo" {
 		if category_name == "" {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id  FROM tasks WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=0"+periodquery+orderquery, loginInfo.ID, "%"+query+"%")
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=0"+periodquery+orderquery, loginInfo.ID, "%"+query+"%")
 		} else {
 			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=0 AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name)
 		}
 	} else {
 		if category_name == "" {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id  FROM tasks WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=1"+periodquery+orderquery, loginInfo.ID, "%"+query+"%")
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=1"+periodquery+orderquery, loginInfo.ID, "%"+query+"%")
 		} else {
 			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=1 AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name)
 		}

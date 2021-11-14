@@ -4,4 +4,16 @@ INSERT INTO `tasks` (`title`, `user_id`, `category_id`) VALUES ("sample-task-01"
 INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-02", 1);
 INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-03", 1);
 INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-04", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-05", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-06", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-07", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-08", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-09", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-10", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-11", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-12", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-13", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-14", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-15", 1);
+INSERT INTO `tasks` (`title`, `user_id`) VALUES ("sample-task-16", 1);
 INSERT INTO `tasks` (`title`, `user_id`, `is_done`) VALUES ("sample-task-05", 1, true);

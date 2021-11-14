@@ -17,6 +17,20 @@ func RGetTask(ctx *gin.Context) {
 
 // REditTask renders taskedit.html
 func REditTask(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	loginUserJson, err := dproxy.New(session.Get("user")).String()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	// Get User from session
+
+	var loginInfo database.User
+	err = json.Unmarshal([]byte(loginUserJson), &loginInfo)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
 	// Get DB connection
 	db, err := database.GetConnection()
 	if err != nil {
@@ -24,6 +38,13 @@ func REditTask(ctx *gin.Context) {
 		return
 	}
 
+	// Get task data
+	var task database.Task
+	err = db.Get(&task, "SELECT * FROM tasks WHERE id = ? and user_id = ?", ctx.Param("id"), loginInfo.ID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
 	// Get Categories
 	var categories []database.Category
 	err = db.Select(&categories, "SELECT * FROM categories")
@@ -32,7 +53,7 @@ func REditTask(ctx *gin.Context) {
 		return
 	}
 
-	ctx.HTML(http.StatusOK, "taskedit.html", gin.H{"Title": "Edit", "id": ctx.Param("id"), "Categories": categories})
+	ctx.HTML(http.StatusOK, "taskedit.html", gin.H{"Title": "Edit", "id": ctx.Param("id"), "Categories": categories, "Name": task.Title})
 }
 
 // PostTask processes a POST request for a task
@@ -93,17 +114,28 @@ func PutTask(ctx *gin.Context) {
 		return
 	}
 
-	// Get task data
-	var task database.Task
-	task.Title = ctx.PostForm("title")
-	categoryID := ctx.PostForm("category")
-
 	// Get User from session
 
 	var loginInfo database.User
 	err = json.Unmarshal([]byte(loginUserJson), &loginInfo)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Get task data
+	var task database.Task
+	task.Title = ctx.PostForm("title")
+	categoryID := ctx.PostForm("category")
+	if categoryID == "" {
+		// Update task
+		_, err = db.Exec("UPDATE tasks SET title = ? WHERE id = ? AND user_id = ?", task.Title, ctx.Param("id"), loginInfo.ID)
+		if err != nil {
+			ctx.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		// Render task
+		ctx.Redirect(http.StatusSeeOther, "/")
 		return
 	}
 
