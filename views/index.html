@@ -1,0 +1,107 @@
+{{ template "header" . }}
+<script type="text/javascript">
+    function openTab(evt, tabName) {
+        var i, x, tablinks;
+        x = document.getElementsByClassName("tab");
+        for (i = 0; i < x.length; i++) {
+            x[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < x.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" w3-green", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " w3-green";
+    }
+</script>
+<div class="w3-bar w3-black">
+    <button class="w3-bar-item w3-button tablink w3-green" onclick="openTab(event, 'list')">Task list</button>
+    <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'task')">Register task</button>
+    <button class="w3-bar-item w3-button tablink" onclick="openTab(event, 'tcategory')">Register category</button>
+    <div class="w3-dropdown-hover w3-right">
+        <button class="w3-button">{{ .User.Name }}</button>
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+            <form action="/logout" method="post">
+                <button class="w3-bar-item w3-button" type="submit">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="list" class="tab w3-animate-opacity">
+    <h2>List of tasks</h1>
+    <div>
+        <!--- search form with title, todo, period -->
+        <h3>Search</h3>
+        <form action="/list/search" method="post">
+            <input type="text" name="search" placeholder="{{ .Query }}">
+            <select name="category" id="category">
+                <option value="">All categories</option>
+                {{ range $category := .Categories }}
+                <option value="{{ $category.ID }}">{{ $category.Name }}</option>
+                {{ end }}
+            </select>
+            <select name="filter">
+                <option value="all">All</option>
+                <option value="todo">To do</option>
+                <option value="complete">Completed</option>
+            </select>
+            <input type="date" name="start"> ~ <input type="date" name="end">
+            <input type="submit" value="Search" class="w3-btn w3-round">
+        </form>
+        <br>
+    </div>
+    {{ if not .Tasks }}
+    <p>There is no task to list.</p>
+    {{ else }}
+    <table class="w3-table w3-striped w3-border">
+        <tr>
+            <th></th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Registration Date</th>
+            <th>Operation</th>
+        </tr>
+        {{ range $task := .Tasks }}
+        <tr>
+            <td>{{ if not $task.IsDone }}<form action="/task/{{ $task.ID }}/finish" method="post"><button class="w3-button w3-green w3-circle">✓</button></form>{{ else }}<form action="/task/{{ $task.ID }}/resume" method="post"><button class="w3-button w3-black w3-circle">↩</button>
+            </form>{{ end }}</td>
+            <td><a href="/task/{{ $task.ID }}">{{ $task.Title }}</a></td>
+            <td>{{ if $task.IsDone }}<span class="w3-tag w3-green w3-round">Completed</span>{{ else }}<span class="w3-tag w3-blue w3-round">To do</span>{{ end }}</td>
+            <td>{{ if $task.CategoryName }}{{ $task.CategoryName }}{{ else }}No Category{{ end }}</td>
+            <td>{{ $task.CreatedAt | formatAsDate }}</td>
+            <td><a href="/task/{{ $task.ID }}/edit">Edit</a> <a data-method="delete"
+                    href="/task/{{ $task.ID }}/delete">Delete</a></td>
+        </tr>
+        {{ end }}
+    </table>
+    {{ end }}
+</div>
+
+<div id="task" class="tab w3-animate-opacity" style="display:none">
+    <h2>Register task</h1>
+    <form method="post" action="/task">
+        <div>
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="title">
+            <label for="category">Category:</label>
+            <select name="category" id="category">
+                <option value="">No Category</option>
+                {{ range $category := .Categories }}
+                <option value="{{ $category.ID }}">{{ $category.Name }}</option>
+                {{ end }}
+            </select>
+            <input type="submit" value="Submit" class="w3-btn w3-round">
+        </div>
+    </form>
+</div>
+
+<div id="tcategory" class="tab w3-animate-opacity" style="display:none">
+    <h2>Register category</h2>
+    <form method="post" action="/category">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name">
+        <input type="submit" value="Submit" class="w3-btn w3-round">
+    </form>
+</div>
+{{ template "footer" }}

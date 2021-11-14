@@ -1,0 +1,15 @@
+{{ template "header" . }}
+<h1>Edit task</h1>
+<form method="post" action="/task/{{ .id }}/edit">
+    <div>
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title">
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            {{ range $category := .Categories }}
+            <option value="{{ $category.ID }}">{{ $category.Name }}</option>
+            {{ end }}
+            </select>
+    </div>
+</form>
+{{ template "footer" }}

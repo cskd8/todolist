@@ -1,0 +1,23 @@
+{{ template "header" . }}
+<h1>{{ .Title }}</h1>
+<table class="w3-table w3-striped w3-border">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Category</th>
+        <th>Registration Date</th>
+        <th>Operation</th>
+    </tr>
+    <tr>
+        <td>{{ .Task.ID }}</td>
+        <td>{{ .Task.Title }}</td>
+        <td>{{ if .Task.IsDone }}<span class="w3-tag w3-green w3-round">Completed</span>{{ else }}<span
+                class="w3-tag w3-blue w3-round">To do</span>{{ end }}</td>
+        <td>{{ if .Task.CategoryName }}{{ .Task.CategoryName }}{{ else }}No Category{{ end }}</td>
+        <td>{{ .Task.CreatedAt | formatAsDate }}</td>
+        <td><a href="/task/{{ .Task.ID }}/edit">Edit</a> <a data-method="delete" href="/task/{{ .Task.ID }}/delete">Delete</a>
+        </td>
+    </tr>
+</table>
+{{ template "footer" }}

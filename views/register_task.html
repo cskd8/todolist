@@ -1,0 +1,17 @@
+{{ template "header" . }}
+<h1>Register task</h1>
+<form method="post" action="/task">
+    <div>
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" value="{{.Title}}">
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            {{ range $category := .Categories }}
+            <option value="{{ $category.Id }}">{{ $category.Name }}</option>
+            {{ end }}
+    </div>
+    <div>
+        <input type="submit" value="Submit" class="w3-btn">
+    </div>
+</form>
+{{ template "footer" }}
