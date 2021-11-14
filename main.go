@@ -69,6 +69,9 @@ func main() {
 	engine.GET("/task/:id/edit", service.REditTask)     // ":id" is a parameter
 	engine.POST("/task/:id/edit", service.PutTask)      // ":id" is a parameter
 	engine.GET("/task/:id/delete", service.DeleteTask)  // ":id" is a parameter
+	engine.GET("/user/edit", service.REditUser)
+	engine.POST("/user/edit", service.EditUser)
+	engine.POST("/leave", service.Leave)
 	engine.POST("/logout", service.Logout)
 
 	// start server

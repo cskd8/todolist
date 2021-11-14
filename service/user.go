@@ -19,6 +19,10 @@ func RSignup(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "signup.html", gin.H{"Title": "Signup"})
 }
 
+func REditUser(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "edit_user.html", gin.H{"Title": "Edit User"})
+}
+
 func Login(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	// Login with username and password using SHA2
@@ -50,6 +54,69 @@ func Login(ctx *gin.Context) {
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "Invalid password")
 		return
+	}
+
+	// json user
+	userJson, err := json.Marshal(user)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Set session
+	session.Set("user", string(userJson))
+
+	// Save session
+	session.Save()
+
+	// Redirect to index
+	ctx.Redirect(http.StatusFound, "/")
+}
+
+func EditUser(ctx *gin.Context) {
+	session := sessions.Default(ctx)
+	loginUserJson, err := dproxy.New(session.Get("user")).String()
+
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var loginInfo database.User
+	err = json.Unmarshal([]byte(loginUserJson), &loginInfo)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+
+	// Get DB connection
+	db, err := database.GetConnection()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Update user
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	_, err = db.Exec("UPDATE users SET name = ?, password = ? WHERE id = ?", username, string(hashedPassword), loginInfo.ID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user := database.User{
+		ID:        loginInfo.ID,
+		Name:      username,
+		Password:  string(hashedPassword),
+		CreatedAt: loginInfo.CreatedAt,
 	}
 
 	// json user
@@ -119,6 +186,41 @@ func Logout(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	session.Clear()
 	session.Save()
+
+	ctx.Redirect(http.StatusFound, "/login")
+}
+
+func Leave(ctx *gin.Context) {
+	// withdrawal from the website
+	session := sessions.Default(ctx)
+	loginUserJson, err := dproxy.New(session.Get("user")).String()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+	session.Clear()
+	session.Save()
+
+	var loginInfo database.User
+	err = json.Unmarshal([]byte(loginUserJson), &loginInfo)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Get DB connection
+	db, err := database.GetConnection()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Delete user
+	_, err = db.Exec("DELETE FROM users WHERE id = ?", loginInfo.ID)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	ctx.Redirect(http.StatusFound, "/login")
 }

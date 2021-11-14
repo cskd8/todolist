@@ -65,7 +65,7 @@ func PostTask(ctx *gin.Context) {
 	task.Title = ctx.PostForm("title")
 	categoryID := ctx.PostForm("category")
 
-	if categoryID == "null" {
+	if categoryID == "" {
 		// Insert task
 		db.MustExec("INSERT INTO tasks (title, user_id) VALUES (?, ?)", task.Title, loginInfo.ID)
 	} else {
