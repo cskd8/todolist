@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -89,10 +88,6 @@ func PostTask(ctx *gin.Context) {
 	categoryID := ctx.PostForm("category")
 	expires := ctx.PostForm("expires")
 
-	fmt.Println(expires)
-	e, _ := time.Parse("2006-01-02T15:04", expires)
-	fmt.Println(e)
-
 	if categoryID == "" {
 		// Insert task
 		db.MustExec("INSERT INTO tasks (title, user_id, expires) VALUES (?, ?, ?)", task.Title, loginInfo.ID, expires)
@@ -135,9 +130,10 @@ func PutTask(ctx *gin.Context) {
 	task.Title = ctx.PostForm("title")
 	categoryID := ctx.PostForm("category")
 	expires := ctx.PostForm("expires")
+	fmt.Println(expires)
 	if categoryID == "" {
 		// Update task
-		_, err = db.Exec("UPDATE tasks SET title = ? WHERE id = ? AND user_id = ? AND expires = ?", task.Title, ctx.Param("id"), loginInfo.ID, expires)
+		_, err = db.Exec("UPDATE tasks SET title = ?, expires = ? WHERE id = ? AND user_id = ?", task.Title, expires, ctx.Param("id"), loginInfo.ID)
 		if err != nil {
 			ctx.String(http.StatusInternalServerError, err.Error())
 			return
@@ -148,7 +144,7 @@ func PutTask(ctx *gin.Context) {
 	}
 
 	// Update task
-	_, err = db.Exec("UPDATE tasks SET title = ?, category_id = ? WHERE id = ? AND user_id = ? AND expires = ?", task.Title, categoryID, ctx.Param("id"), loginInfo.ID, expires)
+	_, err = db.Exec("UPDATE tasks SET title = ?, category_id = ?, expires = ? WHERE id = ? AND user_id = ?", task.Title, categoryID, expires, ctx.Param("id"), loginInfo.ID)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, err.Error())
 		return

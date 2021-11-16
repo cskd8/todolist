@@ -3,15 +3,17 @@
 <h1>Edit task</h1>
 <form method="post" action="/task/{{ .id }}/edit">
     <div>
-        <label for="title">Title</label>
+        <label for="title">Title:</label>
         <input type="text" name="title" id="title" value="{{ .Name }}">
-        <label for="category">Category</label>
+        <label for="category">Category:</label>
         <select name="category" id="category">
             <option value="">No Category</option>
             {{ range $category := .Categories }}
             <option value="{{ $category.ID }}">{{ $category.Name }}</option>
             {{ end }}
             </select>
+            <label for="expires">Expires:</label>
+            <input type="datetime-local" id="expires" name="expires">
         <button class="w3-btn w3-round w3-blue" type="submit">Edit</button>
     </div>
 </form>
