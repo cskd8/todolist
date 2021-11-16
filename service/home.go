@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -90,6 +91,11 @@ func Home(ctx *gin.Context) {
 	pages := make([]struct{ Number int }, pageCount)
 	for i := 0; i < pageCount; i++ {
 		pages[i] = struct{ Number int }{i + 1}
+	}
+
+	// tasks[i].expires - now
+	for i := 0; i < len(tasks); i++ {
+		tasks[i].Remaining = tasks[i].Expires.Unix() - time.Now().Unix()
 	}
 
 	// Render tasks

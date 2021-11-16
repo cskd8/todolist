@@ -76,6 +76,7 @@
             <th>Title</th>
             <th>Status</th>
             <th>Category</th>
+            <th>Expires</th>
             <th>Registration Date</th>
             <th>Operation</th>
         </tr>
@@ -86,6 +87,7 @@
             <td><a href="/task/{{ $task.ID }}">{{ $task.Title }}</a></td>
             <td>{{ if $task.IsDone }}<span class="w3-tag w3-green w3-round">Completed</span>{{ else }}<span class="w3-tag w3-blue w3-round">To do</span>{{ end }}</td>
             <td>{{ if $task.CategoryName }}{{ $task.CategoryName }}{{ else }}No Category{{ end }}</td>
+            <td>{{ if not $task.IsDone }}{{ if lt $task.Remaining 0 }}<span class="w3-tag w3-black w3-round">{{ else if lt $task.Remaining 86400 }}<span class="w3-tag w3-red w3-round">{{ else if lt $task.Remaining 259200 }}<span class="w3-tag w3-yellow w3-round">{{ else }}<span class="w3-tag w3-blue w3-round">{{ end }}{{ end }}{{ $task.Expires.Format "2006/01/02 15:04" }}{{ if not $task.IsDone }}</span>{{ end }}</td>
             <td>{{ $task.CreatedAt | formatAsDate }}</td>
             <td><a href="/task/{{ $task.ID }}/edit">Edit</a> <a data-method="delete"
                     href="/task/{{ $task.ID }}/delete">Delete</a></td>
@@ -119,6 +121,8 @@
                 <option value="{{ $category.ID }}">{{ $category.Name }}</option>
                 {{ end }}
             </select>
+            <label for="expires">Expires:</label>
+            <input type="datetime-local" id="expires" name="expires">
             <input type="submit" value="Submit" class="w3-btn w3-round w3-blue">
         </div>
     </form>

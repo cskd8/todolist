@@ -11,6 +11,7 @@ type Task struct {
 	Title      string    `db:"title"`
 	CategoryID *uint64   `db:"category_id"`
 	UserID     uint64    `db:"user_id"`
+	Expires    time.Time `db:"expires"`
 	CreatedAt  time.Time `db:"created_at"`
 	IsDone     bool      `db:"is_done"`
 }

@@ -17,6 +17,7 @@ CREATE TABLE `tasks` (
     `is_done` boolean NOT NULL DEFAULT b'0',
     `category_id` bigint(20),
     `user_id` bigint(20) NOT NULL,
+    `expires` datetime NOT NULL DEFAULT '3020-01-01 00:00:00',
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     CONSTRAINT fk_user_id FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

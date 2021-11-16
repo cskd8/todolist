@@ -2,7 +2,9 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -85,13 +87,18 @@ func PostTask(ctx *gin.Context) {
 	var task database.Task
 	task.Title = ctx.PostForm("title")
 	categoryID := ctx.PostForm("category")
+	expires := ctx.PostForm("expires")
+
+	fmt.Println(expires)
+	e, _ := time.Parse("2006-01-02T15:04", expires)
+	fmt.Println(e)
 
 	if categoryID == "" {
 		// Insert task
-		db.MustExec("INSERT INTO tasks (title, user_id) VALUES (?, ?)", task.Title, loginInfo.ID)
+		db.MustExec("INSERT INTO tasks (title, user_id, expires) VALUES (?, ?, ?)", task.Title, loginInfo.ID, expires)
 	} else {
 		// Insert task
-		db.MustExec("INSERT INTO tasks (title, category_id, user_id) VALUES (?, ?, ?)", task.Title, categoryID, loginInfo.ID)
+		db.MustExec("INSERT INTO tasks (title, category_id, user_id, expires) VALUES (?, ?, ?, ?)", task.Title, categoryID, loginInfo.ID, expires)
 	}
 
 	// Render task
@@ -127,9 +134,10 @@ func PutTask(ctx *gin.Context) {
 	var task database.Task
 	task.Title = ctx.PostForm("title")
 	categoryID := ctx.PostForm("category")
+	expires := ctx.PostForm("expires")
 	if categoryID == "" {
 		// Update task
-		_, err = db.Exec("UPDATE tasks SET title = ? WHERE id = ? AND user_id = ?", task.Title, ctx.Param("id"), loginInfo.ID)
+		_, err = db.Exec("UPDATE tasks SET title = ? WHERE id = ? AND user_id = ? AND expires = ?", task.Title, ctx.Param("id"), loginInfo.ID, expires)
 		if err != nil {
 			ctx.String(http.StatusInternalServerError, err.Error())
 			return
@@ -140,7 +148,7 @@ func PutTask(ctx *gin.Context) {
 	}
 
 	// Update task
-	_, err = db.Exec("UPDATE tasks SET title = ?, category_id = ? WHERE id = ? AND user_id = ?", task.Title, categoryID, ctx.Param("id"), loginInfo.ID)
+	_, err = db.Exec("UPDATE tasks SET title = ?, category_id = ? WHERE id = ? AND user_id = ? AND expires = ?", task.Title, categoryID, ctx.Param("id"), loginInfo.ID, expires)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, err.Error())
 		return

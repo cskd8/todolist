@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -173,6 +174,7 @@ func ResumeTask(ctx *gin.Context) {
 type TaskCategory struct {
 	database.Task
 	CategoryName *string `db:"name"`
+	Remaining    int64
 }
 
 // Searching Tasks
@@ -223,7 +225,7 @@ func Search(ctx *gin.Context) {
 	var tasks []TaskCategory
 	periodquery := ""
 	if start != "" && end != "" {
-		periodquery = " AND created_at BETWEEN '" + start + "' AND '" + end + "'"
+		periodquery = " AND expires BETWEEN '" + start + "' AND '" + end + "'"
 	}
 	orderquery := " ORDER BY tasks.created_at DESC "
 	// category_id is in tasks table and name is in categories table
@@ -257,6 +259,11 @@ func Search(ctx *gin.Context) {
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, err.Error())
 		return
+	}
+
+	// tasks[i].expires - now
+	for i := 0; i < len(tasks); i++ {
+		tasks[i].Remaining = tasks[i].Expires.Unix() - time.Now().Unix()
 	}
 
 	// Render tasks
