@@ -218,7 +218,7 @@ func Search(ctx *gin.Context) {
 	// Get End date
 	end := ctx.PostForm("end")
 
-	if query == "" && filter == "" || filter == "all" && category_name == "" && start == "" && end == "" {
+	if query == "" && (filter == "" || filter == "all") && category_name == "" && start == "" && end == "" {
 		ctx.Redirect(http.StatusFound, "/")
 		return
 	}
