@@ -84,6 +84,8 @@ func ShowTask(ctx *gin.Context) {
 		return
 	}
 
+	task.Remaining = task.Expires.Unix() - time.Now().Unix()
+
 	// Render task
 	ctx.HTML(http.StatusOK, "task.html", gin.H{"Title": task.Title, "Task": task})
 }

@@ -33,6 +33,10 @@ func Home(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	loginUserJson, err := dproxy.New(session.Get("user")).String()
 	if err != nil {
+		if err.Error() == "not matched types: expected=string actual=nil: (root)" {
+			ctx.Redirect(http.StatusFound, "/login")
+			return
+		}
 		ctx.String(http.StatusInternalServerError, err.Error())
 		return
 	}

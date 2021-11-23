@@ -7,6 +7,7 @@
         <th>Title</th>
         <th>Status</th>
         <th>Category</th>
+        <th>Expires</th>
         <th>Registration Date</th>
         <th>Operation</th>
     </tr>
@@ -16,7 +17,11 @@
         <td>{{ if .Task.IsDone }}<span class="w3-tag w3-green w3-round">Completed</span>{{ else }}<span
                 class="w3-tag w3-blue w3-round">To do</span>{{ end }}</td>
         <td>{{ if .Task.CategoryName }}{{ .Task.CategoryName }}{{ else }}No Category{{ end }}</td>
-        <td>{{ .Task.CreatedAt | formatAsDate }}</td>
+        <td>{{ if not .Task.IsDone }}{{ if lt .Task.Remaining 0 }}<span class="w3-tag w3-black w3-round">{{ else if lt
+                .Task.Remaining 86400 }}<span class="w3-tag w3-red w3-round">{{ else if lt .Task.Remaining 259200 }}<span
+                        class="w3-tag w3-yellow w3-round">{{ else }}<span class="w3-tag w3-blue w3-round">{{ end }}{{ end }}{{
+                            .Task.Expires.Format "2006/01/02 15:04" }}{{ if not .Task.IsDone }}</span>{{ end }}</td>
+        <td>{{ .Task.CreatedAt.Format "2006/01/02 15:04" }}</td>
         <td><a href="/task/{{ .Task.ID }}/edit">Edit</a> <a data-method="delete" href="/task/{{ .Task.ID }}/delete">Delete</a>
         </td>
     </tr>
