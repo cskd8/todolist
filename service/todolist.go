@@ -227,28 +227,28 @@ func Search(ctx *gin.Context) {
 	var tasks []TaskCategory
 	periodquery := ""
 	if start != "" && end != "" {
-		periodquery = " AND expires BETWEEN '" + start + "' AND '" + end + "'"
+		periodquery = " AND expires BETWEEN ? AND ?"
 	}
-	orderquery := " ORDER BY tasks.created_at DESC "
+	orderquery := " ORDER BY tasks.created_at DESC"
 	// category_id is in tasks table and name is in categories table
 	// use TaskCategory struct to get category name
 	if filter == "all" || filter == "" {
 		if category_name == "" {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%")
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", start, end)
 		} else {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name)
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name, start, end)
 		}
 	} else if filter == "todo" {
 		if category_name == "" {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=0"+periodquery+orderquery, loginInfo.ID, "%"+query+"%")
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=0"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", start, end)
 		} else {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=0 AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name)
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=0 AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name, start, end)
 		}
 	} else {
 		if category_name == "" {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=1"+periodquery+orderquery, loginInfo.ID, "%"+query+"%")
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=1"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", start, end)
 		} else {
-			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=1 AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name)
+			err = db.Select(&tasks, "SELECT tasks.*, categories.name FROM tasks LEFT JOIN categories ON tasks.category_id = categories.id WHERE tasks.user_id = ? AND tasks.title LIKE ? AND tasks.is_done=1 AND categories.id = ?"+periodquery+orderquery, loginInfo.ID, "%"+query+"%", category_name, start, end)
 		}
 	}
 	if err != nil {
